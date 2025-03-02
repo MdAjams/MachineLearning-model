@@ -10,8 +10,19 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, r2_score
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 
-# Ensure the file exists in the same directory
-df = pd.read_csv("Aviation_KPIs_Dataset.csv")
+@st.cache
+def load_data():
+    return pd.read_csv("Aviation_KPIs_Dataset.csv")
+
+@st.cache
+def train_models(X_train_scaled, y_train):
+    linear_model = LinearRegression()
+    random_forest_model = RandomForestRegressor(n_estimators=100, random_state=42)
+    linear_model.fit(X_train_scaled, y_train)
+    random_forest_model.fit(X_train_scaled, y_train)
+    return linear_model, random_forest_model
+
+df = load_data()
 
 features = ['Delay (Minutes)', 'Aircraft Utilization (Hours/Day)', 'Turnaround Time (Minutes)',
             'Load Factor (%)', 'Fleet Availability (%)', 'Maintenance Downtime (Hours)',
@@ -31,11 +42,7 @@ X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
 # Train models
-linear_model = LinearRegression()
-random_forest_model = RandomForestRegressor(n_estimators=100, random_state=42)
-
-linear_model.fit(X_train_scaled, y_train)
-random_forest_model.fit(X_train_scaled, y_train)
+linear_model, random_forest_model = train_models(X_train_scaled, y_train)
 
 # Predictions
 y_pred_linear = linear_model.predict(X_test_scaled)
