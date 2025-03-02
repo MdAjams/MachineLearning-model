@@ -1,3 +1,7 @@
-dash==2.6.0
-pandas
-gunicorn
+streamlit==1.32.0
+pandas==2.2.0
+numpy==1.26.3
+matplotlib==3.8.2
+seaborn==0.13.2
+scikit-learn==1.4.0
+statsmodels==0.14.0
