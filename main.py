@@ -8,8 +8,10 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, r2_score
+from statsmodels.stats.outliers_influence import variance_inflation_factor
 
-df=pd.read_csv("Aviation_KPIs_Cleaned.csv")
+# Ensure the file exists in the same directory
+df = pd.read_csv("Aviation_KPIs_Dataset.csv")
 
 features = ['Delay (Minutes)', 'Aircraft Utilization (Hours/Day)', 'Turnaround Time (Minutes)',
             'Load Factor (%)', 'Fleet Availability (%)', 'Maintenance Downtime (Hours)',
@@ -17,7 +19,8 @@ features = ['Delay (Minutes)', 'Aircraft Utilization (Hours/Day)', 'Turnaround T
             'Net Profit Margin (%)', 'Ancillary Revenue (USD)', 'Debt-to-Equity Ratio',
             'Revenue per ASK', 'Cost per ASK']
 target = 'Profit (USD)'
-# Split dataru
+
+# Split data
 X = df[features]
 y = df[target]
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -112,12 +115,7 @@ st.sidebar.subheader("Predicted Profit")
 st.sidebar.write(f"### Linear Regression: ${predicted_profit_linear:,.2f}")
 st.sidebar.write(f"### Random Forest: ${predicted_profit_rf:,.2f}")
 
-######################################################################################################################################################
 # Checking for Multicollinearity
-
-from statsmodels.stats.outliers_influence import variance_inflation_factor
-
-# Calculate VIF for each feature
 vif_data = pd.DataFrame()
 vif_data["Features"] = X.columns
 vif_data["VIF"] = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])]
@@ -125,8 +123,8 @@ vif_data["VIF"] = [variance_inflation_factor(X.values, i) for i in range(X.shape
 # Display VIF values in Streamlit
 st.subheader("Variance Inflation Factor (VIF)")
 st.write(vif_data)
-########################################################################################################
-#Checking for Overfitting
+
+# Checking for Overfitting
 # Model evaluation on training data
 y_train_pred_linear = linear_model.predict(X_train_scaled)
 y_train_pred_rf = random_forest_model.predict(X_train_scaled)
@@ -143,9 +141,6 @@ st.sidebar.write("### Linear Regression")
 st.sidebar.write(f"Train R²: {r2_train_linear:.2f}, Test R²: {r2_linear:.2f}")
 st.sidebar.write("### Random Forest")
 st.sidebar.write(f"Train R²: {r2_train_rf:.2f}, Test R²: {r2_rf:.2f}")
-############################################################################################################################
-
-from statsmodels.stats.outliers_influence import variance_inflation_factor
 
 # Function to remove high-VIF features
 def remove_high_vif_features(X, threshold=5.0):
